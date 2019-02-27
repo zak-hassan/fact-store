@@ -34,7 +34,7 @@ def persistMetadataToFactStore(id, anomaly):
 @app.route("/api/metadata", methods=['GET'])
 def metadata():
     """ Service to provide list of false anomalies to be relabeled during ml training run"""
-    pf = ParquetFile('factstore.parquet')
+    pf = ParquetFile(PARQUET_FILE_NAME)
     df = pf.to_pandas()
     return df.to_json(orient='records')
 
