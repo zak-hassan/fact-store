@@ -5,40 +5,18 @@ import boto3
 import os
 import datetime
 
-PARQUET_FILE_NAME = 'factstore.parquet'
+PARQUET_FILE_NAME = 'metadata/factstore.parquet'
 app = Flask(__name__, static_folder="static")
 
 
 
 @app.route("/")
 def index():
-    return  render_template("index.html")
+    id = request.args.get('lad_id')
+    if id is None:
+        return render_template("index.html")
+    return  render_template("index.html",id=id)
 
-def syncModel():
-    """
-    Will check if the after training you would like to store models in s3
-    with timestamp. It will follow a particular pattern:
-
-    s3://<bucket_name>/<path>/<timestamp>
-
-    Later after running training you can serve models from a particular timestamp.
-
-    :return:
-    """
-
-    session = boto3.session.Session()
-    s3_key = os.getenv("LAD_S3_KEY")
-    s3_secret = os.getenv("LAD_S3_SECRET")
-    s3_host = os.getenv("LAD_S3_HOST")
-    s3_client = session.client(service_name='s3',
-                               aws_access_key_id=s3_key,
-                               aws_secret_access_key=s3_secret,
-                               endpoint_url=s3_host)
-
-    #s3_bucket = os.getenv("LAD_S3_BUCKET")
-
-    s3_client.upload_file(Filename="factstore.parquet", Bucket="AIOPS", Key="anomaly-detection/metadata/factstore.parquet")
-    print.info("Done uploading models to s3 complete")
 
 def persistMetadataToFactStore(id, anomaly):
     # TODO: Store results in parquet store
